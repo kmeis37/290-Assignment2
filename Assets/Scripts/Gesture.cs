@@ -11,6 +11,8 @@ using Mediapipe.Unity.Holistic;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.Animations;
 
 public class Gesture : MonoBehaviour
 {
@@ -26,6 +28,21 @@ public class Gesture : MonoBehaviour
     public bool trigger = false;
     private float distance;
     int totalNumberofLandmark;
+    public GameObject Granny;
+    public GameObject AudioSource;
+
+    public RuntimeAnimatorController talking_ctrl;
+    public RuntimeAnimatorController sad_idle_ctrl;
+    public AudioClip sad_music;
+    public AudioClip adults_talking;
+
+
+
+    // static void CreateControllers () {
+    //     public animatorController talking_ctrl = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath("Assets/Model/Talking.controller");
+    //     public animatorController sad_idle_ctrl = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath("Assets/Model/Sad_Idle.controller");
+    // }
+    
     private void Awake()
     {
         if (Gesture.gen == null)
@@ -55,6 +72,16 @@ public class Gesture : MonoBehaviour
             }
         }
     }
+
+    bool isThumbUp(Vector3[] righthandpos) {
+        if (righthandpos[2].y > righthandpos[3].y &&
+            righthandpos[3].y > righthandpos[4].y) {
+                return true;
+        } else {
+            return false;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -90,6 +117,19 @@ public class Gesture : MonoBehaviour
                 rhl.GetComponent<Renderer>().material.SetColor("_Color", customColor);
                 rhl.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
                 idx++;
+            }
+
+            Debug.Log(righthandpos[4].x);
+            Debug.Log(isThumbUp(righthandpos));
+
+            if (isThumbUp(righthandpos)) {
+                // Granny.GetComponent<Animator>().enabled = true;
+                Granny.GetComponent<Animator>().runtimeAnimatorController = talking_ctrl;
+                //AudioSource.GetComponent<AudioClip>().AudioClip = adults_talking;
+            } else {
+                // Granny.GetComponent<Animator>().enabled = true;
+                Granny.GetComponent<Animator>().runtimeAnimatorController = sad_idle_ctrl;
+                //AudioSource.GetComponent<AudioClip>().AudioClip = sad_music;
             }
         }
     }
